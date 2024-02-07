@@ -1,8 +1,9 @@
 const db = require('../database/dbindex');
-const { verifyPost, updateLike } = require('../database/querys/queryindex');
+const { deletePost, verifyPost} = require('../database/querys/queryindex');
 
-const updatePostLike = async (id, req, res) => {
-    console.log("El id que llega a updatePostLike es: " + id);
+const deletePosts = async (req, res) => {
+    const id = Number(req.params.id);
+    console.log("El id que llega a deletePosts es: " + id);
 
     // Validar si el ID está definido
     if (id === undefined || id === null || isNaN(id)) {
@@ -16,19 +17,19 @@ const updatePostLike = async (id, req, res) => {
 
         if (rowCount > 0) {
             // Si hay filas, el post existe
-            const { rowCount: rowCount2, rows: rows2 } = await db.query(updateLike, [id]);
+            const { rowCount: rowCount2, rows: rows2 } = await db.query(deletePost, [id]);
 
             if (rowCount2 > 0) {
-                // La actualización fue exitosa
+                // el delete fue exitoso
                 res.status(200).json({
-                    msg: 'Post update successful',
+                    msg: 'Post delete successful',
                     dataCount: rowCount2,
                     data: rows2,
                 });
             } else {
-                // La actualización no tuvo éxito
+                // el delete no tuvo éxito
                 res.status(200).json({
-                    msg: 'No data found for update',
+                    msg: 'No data found for delete',
                 });
             }
         } else {
@@ -38,14 +39,13 @@ const updatePostLike = async (id, req, res) => {
             });
         }
     } catch (error) {
-        console.error("Error en updatePostLike:", error);
+        console.error("Error en deletePosts:", error);
         res.status(500).json({
             status: 'Internal Server Error',
             msg: error.message || 'Unexpected error occurred',
         });
     }
 };
-
 module.exports = {
-    updatePostLike,
+	deletePosts,
 };
